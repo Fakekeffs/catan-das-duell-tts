@@ -1,14 +1,14 @@
 local config = {
-    production = 5,
-    resource = "Weizen",
-    owner = "blau",
+    production = 3,
+    resource = "Lehm",
+    owner = "rot",
     maxValue = 3
 }
 
 local baseY = nil
 
 function onLoad()
-    self.setName("Weizenfeld 5")
+    self.setName("Lehmfeld 3")
     self.addContextMenuItem("+1 Ressource", addResource)
     self.addContextMenuItem("-1 Ressource", removeResource)
     self.addContextMenuItem("Setze aktuelle Rotation als 1", setCurrentRotationAsOne)

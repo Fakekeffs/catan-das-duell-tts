@@ -1,21 +1,21 @@
 local config = {
-    production = 5,
-    resource = "Weizen",
-    owner = "blau",
+    production = 1,
+    resource = "Gold",
+    owner = "rot",
     maxValue = 3
 }
 
 local baseY = nil
 
 function onLoad()
-    self.setName("Weizenfeld 5")
+    self.setName("Goldfeld 1")
     self.addContextMenuItem("+1 Ressource", addResource)
     self.addContextMenuItem("-1 Ressource", removeResource)
     self.addContextMenuItem("Setze aktuelle Rotation als 1", setCurrentRotationAsOne)
     self.addContextMenuItem("Debug Status", debugStatus)
     self.addContextMenuItem("Debug Doppler", debugDoppler)
 
-    baseY = normalizeAngle(self.getRotation().y)
+    baseY = normalizeAngle(self.getRotation().y - 90)
 
     Global.call("registerResourceField", {
         guid = self.getGUID()

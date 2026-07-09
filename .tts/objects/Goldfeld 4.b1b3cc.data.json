@@ -1,0 +1,58 @@
+{
+  "GUID": "b1b3cc",
+  "Name": "Card",
+  "Transform": {
+    "posX": -4.86,
+    "posY": 0.9736049,
+    "posZ": 11.34,
+    "rotX": 4.69668642e-8,
+    "rotY": -8.97112246e-11,
+    "rotZ": -1.63505831e-8,
+    "scaleX": 1,
+    "scaleY": 1,
+    "scaleZ": 1
+  },
+  "Nickname": "Goldfeld 4",
+  "Description": "",
+  "GMNotes": "",
+  "AltLookAngle": {
+    "x": 0,
+    "y": 0,
+    "z": 0
+  },
+  "ColorDiffuse": {
+    "r": 0.713235259,
+    "g": 0.713235259,
+    "b": 0.713235259
+  },
+  "LayoutGroupSortIndex": 0,
+  "Value": 0,
+  "Locked": false,
+  "Grid": true,
+  "Snap": true,
+  "IgnoreFoW": false,
+  "MeasureMovement": false,
+  "DragSelectable": true,
+  "Autoraise": true,
+  "Sticky": true,
+  "Tooltip": true,
+  "GridProjection": false,
+  "HideWhenFaceDown": true,
+  "Hands": true,
+  "CardID": 1205,
+  "SidewaysCard": false,
+  "CustomDeck": {
+    "12": {
+      "FaceURL": "https://steamusercontent-a.akamaihd.net/ugc/1053226622839260270/8ACF5F8114B4C50687175ED462604444490D3CA4/",
+      "BackURL": "https://steamusercontent-a.akamaihd.net/ugc/1053226622839260401/EE781C3282FE10A2049B03477773564C5466FBB6/",
+      "NumWidth": 10,
+      "NumHeight": 2,
+      "BackIsHidden": true,
+      "UniqueBack": false,
+      "Type": 0
+    }
+  },
+  "LuaScript": "local config = {\n    production = 4,\n    resource = \"Gold\",\n    owner = \"blau\",\n    maxValue = 3\n}\n\nlocal baseY = nil\n\nfunction onLoad()\n    self.setName(\"Goldfeld 4\")\n    self.addContextMenuItem(\"+1 Ressource\", addResource)\n    self.addContextMenuItem(\"-1 Ressource\", removeResource)\n    self.addContextMenuItem(\"Setze aktuelle Rotation als 1\", setCurrentRotationAsOne)\n    self.addContextMenuItem(\"Debug Status\", debugStatus)\n    self.addContextMenuItem(\"Debug Doppler\", debugDoppler)\n\n    baseY = normalizeAngle(self.getRotation().y - 90)\n\n    Global.call(\"registerResourceField\", {\n        guid = self.getGUID()\n    })\nend\n\nfunction produce(params)\n    if params.roll ~= config.production then\n        return\n    end\n\n    addResource()\nend\n\nfunction addResource(playerColor)\n    local current = getResourceCountFromRotation()\n\n    if current >= config.maxValue then\n        return false\n    end\n\n    local amount = getProductionAmount()\n    local nextValue = math.min(current + amount, config.maxValue)\n\n    setResourceCount(nextValue)\n\n    return true\nend\n\nfunction getProductionAmount()\n    return Global.call(\"getAdjacentProductionMultiplier\", {\n        fieldGuid = self.getGUID(),\n        resource = config.resource\n    })\nend\n\nfunction removeResource(playerColor)\n    local current = getResourceCountFromRotation()\n\n    if current <= 0 then\n        return false\n    end\n\n    local nextValue = current - 1\n    setResourceCount(nextValue)\n\n    return true\nend\n\nfunction setResourceCount(value)\n    local rotation = self.getRotation()\n    local stepsFromOne = value - 1\n\n    if value == 0 then\n        stepsFromOne = 3\n    end\n\n    rotation.y = normalizeAngle(baseY - stepsFromOne * 90)\n    self.setRotation(rotation)\nend\n\nfunction getResourceCountFromRotation()\n    local currentY = normalizeAngle(self.getRotation().y)\n    local diff = normalizeAngle(baseY - currentY)\n    local steps = math.floor((diff + 45) / 90) % 4\n\n    if steps == 0 then\n        return 1\n    end\n\n    if steps == 1 then\n        return 2\n    end\n\n    if steps == 2 then\n        return 3\n    end\n\n    return 0\nend\n\nfunction setCurrentRotationAsOne(playerColor)\n    baseY = normalizeAngle(self.getRotation().y)\n    print(self.getName() .. \": aktuelle Rotation ist jetzt 1 Ressource\")\nend\n\nfunction debugStatus(playerColor)\n    local rotation = self.getRotation()\n    local current = getResourceCountFromRotation()\n    local amount = getProductionAmount()\n\n    print(self.getName() .. \": Besitzer=\" .. tostring(config.owner))\n    print(\"Ressource=\" .. tostring(config.resource) .. \" Produktion=\" .. tostring(config.production))\n    print(\"Ressourcen laut Rotation=\" .. tostring(current))\n    print(\"Produktionsmenge aktuell=\" .. tostring(amount))\n    print(\"baseY=\" .. tostring(baseY))\n    print(\"Rotation: x=\" .. rotation.x .. \" y=\" .. rotation.y .. \" z=\" .. rotation.z)\nend\n\nfunction debugDoppler(playerColor)\n    Global.call(\"debugMultipliers\", {\n        fieldGuid = self.getGUID(),\n        resource = config.resource\n    })\nend\n\nfunction normalizeAngle(angle)\n    angle = angle % 360\n\n    if angle < 0 then\n        angle = angle + 360\n    end\n\n    return angle\nend\n",
+  "LuaScriptState": "",
+  "XmlUI": ""
+}
